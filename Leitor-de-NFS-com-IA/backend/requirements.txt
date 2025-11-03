@@ -1,0 +1,22 @@
+# Framework e Servidor
+fastapi
+uvicorn[standard]
+
+# Banco de Dados
+sqlalchemy
+pymysql         # Driver para MySQL
+alembic         # Para migrações
+
+# Processamento de Documentos
+pymupdf         # Leitura de PDF (texto)
+pdf2image       # Converter PDF em imagem (para OCR)
+pytesseract     # Engine de OCR (wrapper para o Tesseract)
+python-multipart # Para upload de arquivos no FastAPI
+
+# IA
+openai
+
+# Configuração e Validação
+pydantic-settings # Para carregar .env
+
+cryptography
