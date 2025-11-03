@@ -170,4 +170,10 @@ Documentação da API (Swagger): http://localhost:8000/docs
 
 Gerenciador do Banco (PhpMyAdmin): http://localhost:8080
 
+
 Login: root / rootpassword
+
+.env
+DATABASE_URL=mysql+pymysql://user:password@db-mysql:3306/nf_extractor_db
+OPENAI_API_KEY="sk-..."
+
