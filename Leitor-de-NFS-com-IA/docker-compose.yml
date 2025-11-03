@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # Banco de Dados MySQL
+  db-mysql:
+    image: mysql:8.0
+    container_name: nf-extractor-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: nf_extractor_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306" # Expõe o MySQL em 3307 (local) para debug
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "user", "-p${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend FastAPI
+  backend:
+    build:
+      context: ./backend
+    container_name: nf-extractor-backend
+    volumes:
+      - ./backend:/app # Monta o diretório 'backend' inteiro
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL
+      - OPENAI_API_KEY
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+
+  # --- NOVO SERVIÇO ADICIONADO AQUI ---
+  # Serviço do PhpMyAdmin para gerenciar o DB
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: nf-extractor-phpmyadmin
+    ports:
+      - "8080:80" # Expõe o PhpMyAdmin na porta 8080 (local)
+    environment:
+      - PMA_HOST=db-mysql # Aponta para o nome do serviço do seu DB
+      - PMA_PORT=3306     # A porta interna do MySQL
+    depends_on:
+      db-mysql:
+        condition: service_healthy # Espera o DB estar pronto
+  # -------------------------------------
+
+  # Frontend (React + Nginx Proxy)
+  frontend:
+    build:
+      context: ./frontend
+    container_name: nf-extractor-frontend
+    ports:
+      - "80:80" # A porta principal da aplicação
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
