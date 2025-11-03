@@ -177,3 +177,6 @@ Login: root / rootpassword
 DATABASE_URL=mysql+pymysql://user:password@db-mysql:3306/nf_extractor_db
 OPENAI_API_KEY="sk-..."
 
+docker-compose run --rm backend alembic upgrade head
+
+https://platform.openai.com/settings/
